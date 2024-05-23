@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Android Concurrency Examples</string>
+    <string name="execute_task_using_thread_pool_executor">Execute Task using ThreadPoolExecutor</string>
+    <string name="execute_task_using_rxjava">Execute Task Using RxJava</string>
+    <string name="execute_task_using_kotlin_coroutines">Execute Task Using Kotlin Coroutines</string>
+    <string name="execute_task_using_thread">Execute Task Using Thread</string>
+    <string name="updater_by_livedata">Updater by LiveData</string>
+    <string name="updater_by_stateflow">Updater by StateFlow</string>
+    <string name="updater_by_sharedflow">Updater by SharedFlow</string>
+</resources>
