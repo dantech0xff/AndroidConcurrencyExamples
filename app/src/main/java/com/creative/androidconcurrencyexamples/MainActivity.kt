@@ -1,5 +1,6 @@
 package com.creative.androidconcurrencyexamples
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -52,6 +53,9 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.messageSharedFlow.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect {
                 binding?.textBySharedFlow = it
+                if(it == "Navigate to Performance Compare"){
+                    startActivity(Intent(this@MainActivity, PerformanceActivity::class.java))
+                }
             }
         }
     }

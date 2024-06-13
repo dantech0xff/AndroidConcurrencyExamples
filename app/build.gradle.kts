@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.creative.androidconcurrencyexamples"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -52,6 +52,8 @@ dependencies {
 
     implementation(libs.io.reactive.rxjava3)
     implementation(libs.io.reactive.rxandroid)
+    implementation(libs.io.reactive.rxjava2)
+    implementation(libs.io.reactive.rxandroid2)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -20,12 +20,14 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version = "2.8.0" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version = "2.8.0" }
-androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version = "2.8.0" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version = "2.8.1" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version = "2.8.1" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version = "2.8.1" }
 
 io-reactive-rxjava3 = { group = "io.reactivex.rxjava3", name = "rxjava", version = "3.1.8" }
+io-reactive-rxjava2 = { group = "io.reactivex.rxjava2", name = "rxjava", version = "2.2.21" }
 io-reactive-rxandroid = { group = "io.reactivex.rxjava3", name = "rxandroid", version = "3.0.2" }
+io-reactive-rxandroid2 = { group = "io.reactivex.rxjava2", name = "rxandroid", version = "2.1.1" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
