@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * This activity is used to compare the performance of RxJava and Kotlin Coroutines
- * The scenario is to execute a stub async function 1000 times and measure the time taken
+ * The scenario is to execute a stub async function n times and measure the time taken until n times was executed
  * The execution thread will be background thread and the result will be updated on the main thread
  * Reference from: [ProAndroidDev](https://proandroiddev.com/kotlin-coroutines-vs-rxjava-an-initial-performance-test-68160cfc6723)
  */
@@ -34,6 +34,8 @@ class PerformanceActivity : AppCompatActivity() {
     }
 
     private var counter = AtomicInteger()
+    private var counterEnd = AtomicInteger()
+
     private var testStartTime: Long = 0
     private val testArray = IntArray(TEST_ITERATIONS_COUNT)
 
@@ -48,8 +50,24 @@ class PerformanceActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_exec_rx_java).setOnClickListener { onTestRxJavaButtonClick() }
-        findViewById<Button>(R.id.btn_exec_kt_coroutines_1).setOnClickListener { onTestCoroutinesLaunchOnEveryUnitButtonClick() }
-        findViewById<Button>(R.id.btn_exec_kt_coroutines_2).setOnClickListener { onTestCoroutinesLaunchOnlyOnceButtonClick() }
+        findViewById<Button>(R.id.btn_exec_kt_coroutines_1).setOnClickListener { onTestCoroutinesLaunchOnEveryUnitWithJoinButtonClick() }
+        findViewById<Button>(R.id.btn_exec_kt_coroutines_2).setOnClickListener { onTestCoroutinesLaunchOnEveryUnitButtonClick() }
+        findViewById<Button>(R.id.btn_exec_kt_coroutines_3).setOnClickListener { onTestCoroutinesLaunchOnlyOnceButtonClick() }
+    }
+
+    private fun onTestCoroutinesLaunchOnEveryUnitWithJoinButtonClick() { // this to test the impact of join
+        val testName = "$TAG : TestCoroutinesLaunchOnEveryUnitWithJoin"
+
+        startTest(testName)
+        for (i in 1..TEST_ITERATIONS_COUNT) {
+            lifecycleScope.launch(Dispatchers.IO) {// execute on background thread
+                val result = async { stubAsyncFunc() }.await()
+                withContext(Dispatchers.Default) // update the result on main thread
+                {
+                    checkTestEnd(testName, result)
+                }
+            }
+        }
     }
 
     private fun onTestCoroutinesLaunchOnEveryUnitButtonClick() {
@@ -57,11 +75,11 @@ class PerformanceActivity : AppCompatActivity() {
 
         startTest(testName)
         for (i in 1..TEST_ITERATIONS_COUNT) {
-            lifecycleScope.launch(Dispatchers.Default) {
-                async { stubAsyncFunc() }.join()
-                withContext(Dispatchers.Main)
+            lifecycleScope.launch(Dispatchers.IO) {// execute on background thread
+                val result = stubAsyncFunc()
+                withContext(Dispatchers.Default) // update the result on main thread
                 {
-                    checkTestEnd(testName)
+                    checkTestEnd(testName, result)
                 }
             }
         }
@@ -70,13 +88,13 @@ class PerformanceActivity : AppCompatActivity() {
     private fun onTestCoroutinesLaunchOnlyOnceButtonClick() {
         val testName = "$TAG : TestCoroutinesLaunchOnlyOnce"
         startTest(testName)
-        lifecycleScope.launch(Dispatchers.Default) {
+        lifecycleScope.launch(Dispatchers.IO) {// execute on background thread
             testArray
                 .map { stubAsyncFunc() }
                 .map {
-                    withContext(Dispatchers.Main)
+                    withContext(Dispatchers.Default) // update the result on main thread
                     {
-                        checkTestEnd(testName)
+                        checkTestEnd(testName, it)
                     }
                 }
         }
@@ -85,22 +103,20 @@ class PerformanceActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
     private fun onTestRxJavaButtonClick() {
         val testName = "$TAG : RxJava test"
-
         startTest(testName)
-
-        val subscribeScheduler = Schedulers.io()
-        val observeScheduler = AndroidSchedulers.mainThread()
         for (i in 1..TEST_ITERATIONS_COUNT) {
-            Observable.fromCallable {
-                stubAsyncFunc()
-            }.subscribeOn(subscribeScheduler)
-                .observeOn(observeScheduler)
-                .subscribe { checkTestEnd(testName) }
+            Single.create<Int> {
+                it.onSuccess(stubAsyncFunc()) // execute on background thread
+            }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    checkTestEnd(testName, it)
+                }, {}) // update the result on main thread
         }
     }
 
-    private fun stubAsyncFunc() {
-        counter.incrementAndGet()
+    private fun stubAsyncFunc(): Int {
+        return counter.incrementAndGet()
     }
 
     private fun startTest(testName: String) {
@@ -108,20 +124,13 @@ class PerformanceActivity : AppCompatActivity() {
         logStart(testName)
     }
 
-    private fun checkTestEnd(testName: String) {
-        counter.getAndUpdate {
-            if (it == TEST_ITERATIONS_COUNT) {
-                val testTime = System.currentTimeMillis() - testStartTime
-                logEnd("$testName - ${testTime}ms")
-                updateResult("$testName Dataset = $TEST_ITERATIONS_COUNT - ${testTime}ms")
-                Log.d(
-                    KOTLIN_COROUTINES_TESTS_TAG,
-                    "Coroutines test End: ${Thread.currentThread().name}"
-                )
-                return@getAndUpdate 0
-            }
-
-            return@getAndUpdate it
+    private fun checkTestEnd(testName: String, result: Int) {
+        if (result == TEST_ITERATIONS_COUNT) {
+            counter.set(0)
+            counterEnd.set(0)
+            val testTime = System.currentTimeMillis() - testStartTime
+            logEnd("$testName - ${testTime}ms")
+            updateResult("$testName Dataset = $TEST_ITERATIONS_COUNT - ${testTime}ms")
         }
     }
 
@@ -132,10 +141,10 @@ class PerformanceActivity : AppCompatActivity() {
     }
 
     private fun logStart(message: String) {
-        Log.i(KOTLIN_COROUTINES_TESTS_TAG, "Start: $message")
+        Log.i(KOTLIN_COROUTINES_TESTS_TAG, "Data Set $TEST_ITERATIONS_COUNT Start: $message")
     }
 
     private fun logEnd(message: String) {
-        Log.i(KOTLIN_COROUTINES_TESTS_TAG, "End: $message")
+        Log.i(KOTLIN_COROUTINES_TESTS_TAG, "Data Set $TEST_ITERATIONS_COUNT End: $message")
     }
 }

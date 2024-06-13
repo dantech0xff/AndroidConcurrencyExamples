@@ -34,6 +34,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <Button
+            android:text="Kotlin Coroutines 3"
+            android:id="@+id/btn_exec_kt_coroutines_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <TextView
             android:id="@+id/tv_result"
             android:text="Result"
