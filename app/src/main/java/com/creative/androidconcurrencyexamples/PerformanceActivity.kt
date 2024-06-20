@@ -62,7 +62,7 @@ class PerformanceActivity : AppCompatActivity() {
         for (i in 1..TEST_ITERATIONS_COUNT) {
             lifecycleScope.launch(Dispatchers.IO) {// execute on background thread
                 val result = async { stubAsyncFunc() }.await()
-                withContext(Dispatchers.Default) // update the result on main thread
+                withContext(Dispatchers.Main) // update the result on main thread
                 {
                     checkTestEnd(testName, result)
                 }
@@ -77,7 +77,7 @@ class PerformanceActivity : AppCompatActivity() {
         for (i in 1..TEST_ITERATIONS_COUNT) {
             lifecycleScope.launch(Dispatchers.IO) {// execute on background thread
                 val result = stubAsyncFunc()
-                withContext(Dispatchers.Default) // update the result on main thread
+                withContext(Dispatchers.Main) // update the result on main thread
                 {
                     checkTestEnd(testName, result)
                 }
@@ -92,7 +92,7 @@ class PerformanceActivity : AppCompatActivity() {
             testArray
                 .map { stubAsyncFunc() }
                 .map {
-                    withContext(Dispatchers.Default) // update the result on main thread
+                    withContext(Dispatchers.Main) // update the result on main thread
                     {
                         checkTestEnd(testName, it)
                     }
