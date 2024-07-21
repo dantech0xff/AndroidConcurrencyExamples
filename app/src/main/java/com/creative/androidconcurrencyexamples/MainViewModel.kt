@@ -48,6 +48,12 @@ class MainViewModel : ViewModel(), MainEventHandler {
     private val _messageSharedFlow: MutableSharedFlow<String> = MutableSharedFlow()
     val messageSharedFlow = _messageSharedFlow.asSharedFlow()
 
+    override fun onNavigatePerformanceCompare() {
+        viewModelScope.launch {
+            _messageSharedFlow.emit("Navigate to Performance Compare")
+        }
+    }
+
     override fun onClickExecUsingThread() {
         Thread {
             for (i in 0..10) {
@@ -116,6 +122,7 @@ class MainViewModel : ViewModel(), MainEventHandler {
 }
 
 interface MainEventHandler {
+    fun onNavigatePerformanceCompare()
     fun onClickExecUsingThread()
     fun onClickExecUsingThreadPool()
     fun onClickExecUsingRxJava()
