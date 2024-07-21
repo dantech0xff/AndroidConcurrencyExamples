@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.BackpressureStrategy
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.internal.operators.flowable.FlowableAll
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by dan on 23/5/24
@@ -72,7 +75,7 @@ class MainViewModel : ViewModel(), MainEventHandler {
     }
 
     override fun onClickExecUsingRxJava() {
-        FlowableAll.create({ emitter ->
+        Flowable.create({ emitter ->
             for (i in 0..10) {
                 emitter.onNext(i)
                 Thread.sleep(1000)

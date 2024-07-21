@@ -7,4 +7,5 @@
     <string name="updater_by_livedata">Updater by LiveData</string>
     <string name="updater_by_stateflow">Updater by StateFlow</string>
     <string name="updater_by_sharedflow">Updater by SharedFlow</string>
+    <string name="launcher_image">Launcher Image</string>
 </resources>
