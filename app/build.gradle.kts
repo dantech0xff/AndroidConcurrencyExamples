@@ -50,8 +50,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
-    implementation(libs.io.reactive.rxjava3)
-    implementation(libs.io.reactive.rxandroid)
     implementation(libs.io.reactive.rxjava2)
     implementation(libs.io.reactive.rxandroid2)
 

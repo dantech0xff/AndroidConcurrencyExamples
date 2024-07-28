@@ -5,14 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.BackpressureStrategy
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.internal.operators.flowable.FlowableAll
-import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +15,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by dan on 23/5/24
@@ -30,7 +24,6 @@ import java.util.concurrent.TimeUnit
 
 class MainViewModel : ViewModel(), MainEventHandler {
 
-    private val ioDispatcher = Dispatchers.IO
     private val rxJavaCompositeDisposable = CompositeDisposable()
 
     private val threadPoolExecutor: ThreadPoolExecutor = ThreadPoolExecutor(
@@ -59,7 +52,7 @@ class MainViewModel : ViewModel(), MainEventHandler {
             for (i in 0..10) {
                 _messageLiveData.postValue("Executed using Thread: LiveData $i")
                 _messageStateFlow.value = "Executed using Thread: StateFlow $i"
-                viewModelScope.launch(ioDispatcher) {
+                viewModelScope.launch {
                     _messageSharedFlow.emit("Executed using Thread: SharedFlow $i")
                 }
                 Thread.sleep(1000)
@@ -69,31 +62,31 @@ class MainViewModel : ViewModel(), MainEventHandler {
 
     override fun onClickExecUsingThreadPool() {
         threadPoolExecutor.execute {
-            for (i in 0..10) {
+            for (i in 0..10000) {
                 _messageLiveData.postValue("Executed using ThreadPool: LiveData $i")
                 _messageStateFlow.value = "Executed using ThreadPool: StateFlow $i"
-                viewModelScope.launch(ioDispatcher) {
+                viewModelScope.launch {
                     _messageSharedFlow.emit("Executed using ThreadPool: SharedFlow $i")
                 }
-                Thread.sleep(1000)
+                Thread.sleep(100)
             }
         }
     }
 
     override fun onClickExecUsingRxJava() {
-        Flowable.create({ emitter ->
-            for (i in 0..10) {
+        Observable.create { emitter ->
+            for (i in 0..1000000000) {
                 emitter.onNext(i)
-                Thread.sleep(1000)
+                Thread.sleep(100)
             }
             emitter.onComplete()
-        }, BackpressureStrategy.BUFFER)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        }.subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
             .subscribe({ i ->
+                Thread.sleep(100)
                 _messageLiveData.postValue("Executed using ThreadPool: LiveData $i")
                 _messageStateFlow.value = "Executed using ThreadPool: StateFlow $i"
-                viewModelScope.launch(ioDispatcher) {
+                viewModelScope.launch {
                     _messageSharedFlow.emit("Executed using ThreadPool: SharedFlow $i")
                 }
             }, {
@@ -104,12 +97,12 @@ class MainViewModel : ViewModel(), MainEventHandler {
     }
 
     override fun onClickExecUsingCoroutines() {
-        viewModelScope.launch(ioDispatcher) {
-            for (i in 0..10) {
+        viewModelScope.launch {
+            for (i in 0..100000) {
                 _messageLiveData.postValue("Executed using Coroutines: LiveData $i")
                 _messageStateFlow.value = "Executed using Coroutines: StateFlow $i"
                 _messageSharedFlow.emit("Executed using Coroutines: SharedFlow $i")
-                kotlinx.coroutines.delay(1000)
+                kotlinx.coroutines.delay(100)
             }
         }
     }
