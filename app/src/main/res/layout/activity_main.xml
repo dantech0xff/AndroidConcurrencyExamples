@@ -44,6 +44,12 @@
                 android:layout_height="wrap_content"/>
 
             <Button
+                android:text="Navigate to Backpressure Simulator"
+                android:onClick="@{() -> eventHandler.onNavigateBackpressureSimulator()}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
                 android:text="@string/execute_task_using_thread"
                 android:onClick="@{() -> eventHandler.onClickExecUsingThread()}"
                 android:layout_width="match_parent"

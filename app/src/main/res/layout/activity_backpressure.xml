@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".BackpressureActivity">
+
+        <LinearLayout
+            android:padding="6dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:text="RxJava Observable Backpressure"
+                android:id="@+id/btn_rx_java_observable_backpressure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="RxJava Subject Backpressure"
+                android:id="@+id/btn_rx_java_subject_backpressure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="RxJava Flowable Backpressure MISSING"
+                android:id="@+id/btn_rx_java_flowable_backpressure_missing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="RxJava Flowable Backpressure ERROR"
+                android:id="@+id/btn_rx_java_flowable_backpressure_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="RxJava Flowable Backpressure BUFFER"
+                android:id="@+id/btn_rx_java_flowable_backpressure_buffer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="RxJava Flowable Backpressure DROP"
+                android:id="@+id/btn_rx_java_flowable_backpressure_drop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="RxJava Flowable Backpressure LATEST"
+                android:id="@+id/btn_rx_java_flowable_backpressure_latest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Handle Backpressure Observable by Flowable"
+                android:id="@+id/btn_rx_java_handle_observable_backpressure_by_flowable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:text="Handle Backpressure Subject by Flowable"
+                android:id="@+id/btn_rx_java_handle_subject_backpressure_by_flowable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

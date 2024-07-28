@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -40,6 +42,12 @@ class MainViewModel : ViewModel(), MainEventHandler {
 
     private val _messageSharedFlow: MutableSharedFlow<String> = MutableSharedFlow()
     val messageSharedFlow = _messageSharedFlow.asSharedFlow()
+
+    override fun onNavigateBackpressureSimulator() {
+        viewModelScope.launch {
+            _messageSharedFlow.emit("Navigate to Backpressure Simulator")
+        }
+    }
 
     override fun onNavigatePerformanceCompare() {
         viewModelScope.launch {
@@ -115,6 +123,7 @@ class MainViewModel : ViewModel(), MainEventHandler {
 }
 
 interface MainEventHandler {
+    fun onNavigateBackpressureSimulator()
     fun onNavigatePerformanceCompare()
     fun onClickExecUsingThread()
     fun onClickExecUsingThreadPool()

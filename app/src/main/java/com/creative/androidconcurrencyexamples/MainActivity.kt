@@ -53,8 +53,10 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.messageSharedFlow.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect {
                 binding?.textBySharedFlow = it
-                if(it == "Navigate to Performance Compare"){
+                if (it == "Navigate to Performance Compare") {
                     startActivity(Intent(this@MainActivity, PerformanceActivity::class.java))
+                } else if (it == "Navigate to Backpressure Simulator") {
+                    startActivity(Intent(this@MainActivity, BackpressureActivity::class.java))
                 }
             }
         }
