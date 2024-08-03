@@ -72,14 +72,14 @@ class BackpressureViewModel : ViewModel() {
                 it.onNext(LongArray(DummyDataSize) {
                     i
                 }) // simulate large data
-                Thread.sleep(10) // emit every 10 ms
+                Thread.sleep(1) // emit every 10 ms
             }
         }, backpressureStrategy)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.computation())
             .subscribe({
-                Thread.sleep(100) // simulate computation
                 Log.d("BackpressureViewModel", "onRxJavaFlowableBackpressure: ${it[0]}")
+                Thread.sleep(100) // simulate computation
             }, {
                 Log.d("BackpressureViewModel", "onRxJavaFlowableBackpressure: Error: $it")
             })
@@ -91,6 +91,7 @@ class BackpressureViewModel : ViewModel() {
             .toFlowable(BackpressureStrategy.DROP)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.computation())
+//            .toObservable() // -> optional
             .subscribe({
                 Thread.sleep(100) // simulate computation
                 Log.d("BackpressureViewModel", "onRxJavaSubjectBackpressure: ${it[0]}")
