@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
@@ -87,11 +88,20 @@ class BackpressureViewModel : ViewModel() {
     }
 
     fun onHandleBackpressureSubjectByFlowable() {
+
         val disposable = subject
-            .toFlowable(BackpressureStrategy.DROP)
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.computation())
-//            .toObservable() // -> optional
+            .toFlowable(BackpressureStrategy.LATEST)
+//            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .toObservable() // -> optional
+            .concatMap {
+                Log.d("BackpressureViewModel", "onRxJavaSubjectBackpressure CONCATMAP: ${it[0]}")
+                Observable.just(it)
+            }
+            .map {
+                Log.d("BackpressureViewModel", "onRxJavaSubjectBackpressure MAP: ${it[0]}")
+                it
+            }
             .subscribe({
                 Thread.sleep(100) // simulate computation
                 Log.d("BackpressureViewModel", "onRxJavaSubjectBackpressure: ${it[0]}")
